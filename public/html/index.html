@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>h9聊天室-beta版</title>
+	<link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+	<div class="member">
+		<h2>欢迎来到h9大世界 在线人数<span>0</span></h2>
+	</div>
+	<div class="chat">
+		<ul>
+		</ul>
+	</div>
+	<form action="">
+		<textarea class="message"></textarea>
+		<input class="btn" type="button" value="发送">
+	</form>
+</body>
+<script src="../../socket.io/socket.io.js"></script>
+<script>
+	var socket = io('http://10.80.13.17:3000/');
+	var btn = document.querySelector(".btn");
+	var info = document.querySelector(".message");
+	var list = document.querySelector("ul");
+	var span = document.querySelector("span")
+
+	btn.onclick = function(){
+		var message = info.value;
+		socket.on('news', function (data) {
+			list.innerHTML = "";
+			var num = data.num;
+			span.innerHTML = num;
+			var content = data.content;
+			for(let i=0;i<content.length;i++){
+				var li = document.createElement("li");
+				li.innerHTML = content[i];
+				list.appendChild(li);
+			}
+			var chat = document.querySelector(".chat")
+			chat.scrollTop = chat.scrollHeight;
+		})
+		socket.emit('message', { info: message}	);
+		info.value="";
+	}
+
+	info.onkeydown = (function(keyEvent){
+		if(keyEvent.keyCode == 13){
+			var message = info.value;
+			socket.on('news', function (data) {
+				list.innerHTML = "";
+				var num = data.num;
+				span.innerHTML = num;
+				var content = data.content;
+				for(let i=0;i<content.length;i++){
+					var li = document.createElement("li");
+					li.innerHTML = content[i];
+					list.appendChild(li);
+				}
+				var chat = document.querySelector(".chat")
+				chat.scrollTop = chat.scrollHeight;
+			})
+			socket.emit('message', { info: message}	);
+			info.value="";
+		}
+	})
+
+</script>
+</html>
